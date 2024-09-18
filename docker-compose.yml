@@ -1,0 +1,47 @@
+version: '3.8'
+services:
+  django:
+    container_name: django-test
+    restart: always
+    env_file: ./api-server-django/.env
+    build:
+      context: .
+      dockerfile: ./service/Django.Dockerfile
+    networks:
+      - db_network
+      - web_network
+    volumes:
+      - ./api-server-django:/usr/src/app
+
+  nginx:
+    container_name: nginx-test
+    restart: always
+    image: "nginx:latest"
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./nginx:/etc/nginx/conf.d
+    networks:
+      - web_network
+    depends_on: 
+      - django
+  react-ui:
+    container_name: react-soft-ui-test
+    build:
+      context: .
+      dockerfile: ./service/React.Dockerfile
+    volumes:
+      - './react-ui:/app'
+      - '/app/node_modules'
+    ports:
+      - 3000:3000
+    networks:
+      - web_network
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+
+networks:
+  db_network:
+    driver: bridge
+  web_network:
+    driver: bridge
