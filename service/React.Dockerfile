@@ -1,22 +1,20 @@
-# pull official base image
+# Use official Node.js image as the base image
 FROM node:14-alpine
 
-# set working directory
+# Set the working directory
 WORKDIR /app
 
-# add `/app/node_modules/.bin` to $PATH
-ENV PATH /app/node_modules/.bin:$PATH
+# Copy package.json and package-lock.json if available
+COPY react-ui/package*.json ./
 
-# install app dependencies
-COPY react-ui/package.json ./
+# Install dependencies
 RUN npm install --silent
-RUN npm install react-scripts@4.0.0 -g --silent
 
-# add app
+# Copy the rest of the application
 COPY react-ui ./
 
-# Expose port
+# Expose port 3000
 EXPOSE 3000
 
-# start app
+# Start the application
 CMD ["npm", "start"]

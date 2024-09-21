@@ -1,4 +1,5 @@
 version: '3.8'
+
 services:
   django:
     container_name: django-test
@@ -16,15 +17,17 @@ services:
   nginx:
     container_name: nginx-test
     restart: always
-    image: "nginx:latest"
+    image: 'nginx:latest'
     ports:
-      - "5000:5000"
+      - '5000:5000'
     volumes:
       - ./nginx:/etc/nginx/conf.d
     networks:
       - web_network
-    depends_on: 
+    depends_on:
       - django
+      - react-ui
+
   react-ui:
     container_name: react-soft-ui-test
     build:
@@ -34,11 +37,13 @@ services:
       - './react-ui:/app'
       - '/app/node_modules'
     ports:
-      - 3000:3000
+      - '3000:3000'
     networks:
       - web_network
     environment:
       - CHOKIDAR_USEPOLLING=true
+    depends_on:
+      - django
 
 networks:
   db_network:
